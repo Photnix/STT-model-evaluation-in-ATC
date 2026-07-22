@@ -28,3 +28,67 @@ Cons:
 -Highly inaccurate
 -Worst WER/CER of the three models
 -Its speed is excellent, but accuracy is the lowest
+
+Data Set:
+The data comes from huggingface. Specifically called atcosim_corpus by Jzuluaga.
+(https://huggingface.co/datasets/Jzuluaga/atcosim_corpus#data-fields)
+The data uses real ATC simulation audio. It also carries ten hours of speech data. All clips are english spoken pronouced by ten non native speakers. It also includes transcriptions and segment durations.
+
+Language detection:
+This evalutions method was explored but later omitted because all ATCOSIM contains only english and spoken by non native speakers.
+
+
+
+
+
+## Pipeline
+
+ATCOSIM Dataset
+      │
+      ├──────────────► Reference Transcript
+      │                     │
+      │                     ▼
+      │             normalize_text
+      │                     ▼
+      │             normalize_digits
+      │
+      ▼
+Audio Bytes
+      ▼
+Temporary WAV
+      ▼
+Whisper Medium
+      ▼
+Predicted Transcript
+      ▼
+normalize_text
+      ▼
+normalize_digits
+      ▼
+Compare Reference vs Prediction
+      ▼
+WER • CER • STS • SER
+      ▼
+Average Metrics & Results
+
+
+The evaluation pipeline downloads speech samples from the ATCOSIM corpus, extracts each audio recording, and transcribes it using OpenAI Whisper Medium. Both the reference transcript and Whisper prediction are normalized using text normalization and ATC-specific digit normalization before comparison. The normalized transcripts are evaluated using Word Error Rate (WER), Character Error Rate (CER), Semantic Similarity (STS), and Semantic Error Rate (SER). Metrics are averaged across all evaluated samples to measure overall transcription performance.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
