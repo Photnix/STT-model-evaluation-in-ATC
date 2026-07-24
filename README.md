@@ -29,7 +29,11 @@ Cons:
 -Worst WER/CER of the three models
 -Its speed is excellent, but accuracy is the lowest
 
-Data Set:
+I replaced wav2vec2 960h with wav2vec2 large 960h-lv60-self, which improved performance across all evaluation metrics. Word Error Rate decreased from 0.754 to 0.585, while Sentence Transformer Similarity increased from 0.428 to 0.602.
+
+Model Update: The project initially evaluated facebook/wav2vec2-base-960h. It was later replaced with facebook/wav2vec2-large-960h-lv60-self, which consistently achieved better performance across WER, CER, STS, and SER.
+
+Data:
 The data comes from huggingface. Specifically called atcosim_corpus by Jzuluaga.
 (https://huggingface.co/datasets/Jzuluaga/atcosim_corpus#data-fields)
 The data uses real ATC simulation audio. It also carries ten hours of speech data. All clips are english spoken pronouced by ten non native speakers. It also includes transcriptions and segment durations.
@@ -38,6 +42,12 @@ Language detection:
 This evalutions method was explored but later omitted because all ATCOSIM contains only english and spoken by non native speakers.
 
 
+| Metric |  Base |     Large |    Improvement |
+| ------ | ----: | --------: | -------------: |
+| WER    | 0.754 | **0.585** | ↓ 0.169 (~22%) |
+| CER    | 0.363 | **0.297** | ↓ 0.066 (~18%) |
+| STS    | 0.428 | **0.602** | ↑ 0.174 (~41%) |
+| SER    | 0.522 | **0.362** | ↓ 0.160 (~31%) |
 
 
 
@@ -72,7 +82,7 @@ WER • CER • STS • SER
 Average Metrics & Results
 
 
-The evaluation pipeline downloads speech samples from the ATCOSIM corpus, extracts each audio recording, and transcribes it using OpenAI Whisper Medium. Both the reference transcript and Whisper prediction are normalized using text normalization and ATC-specific digit normalization before comparison. The normalized transcripts are evaluated using Word Error Rate (WER), Character Error Rate (CER), Semantic Similarity (STS), and Semantic Error Rate (SER). Metrics are averaged across all evaluated samples to measure overall transcription performance.
+The evaluation pipeline downloads speech samples from the ATCOSIM corpus, extracts each audio recording, and transcribes it using various models. Both the reference transcript and predictions are normalized using text normalization and ATC-specific digit normalization before comparison. The normalized transcripts are evaluated using Word Error Rate (WER), Character Error Rate (CER), Semantic Similarity (STS), and Semantic Error Rate (SER). Metrics are averaged across all evaluated samples to measure overall transcription performance.
 
 
 
