@@ -42,45 +42,49 @@ Language detection:
 This evalutions method was explored but later omitted because all ATCOSIM contains only english and spoken by non native speakers.
 
 
-| Metric |  Base |     Large |    Improvement |
-| ------ | ----: | --------: | -------------: |
-| WER    | 0.754 | **0.585** | ↓ 0.169 (~22%) |
-| CER    | 0.363 | **0.297** | ↓ 0.066 (~18%) |
-| STS    | 0.428 | **0.602** | ↑ 0.174 (~41%) |
-| SER    | 0.522 | **0.362** | ↓ 0.160 (~31%) |
-
+| Model                             |     WER ↓ |     CER ↓ |     STS ↑ |     SER ↓ |
+| --------------------------------- | --------: | --------: | --------: | --------: |
+| **Whisper Medium**                | **0.453** | **0.278** | **0.663** | **0.320** |
+| **Vosk**                          | **0.526** | **0.294** | **0.638** | **0.347** |
+| **wav2vec2-large-960h-lv60-self** | **0.585** | **0.297** | **0.602** | **0.362** |
+| **wav2vec2-base-960h**            | **0.754** | **0.363** | **0.428** | **0.522** |
 
 
 ## Pipeline
 
-ATCOSIM Dataset
-      │
-      ├──────────────► Reference Transcript
-      │                     │
-      │                     ▼
-      │             normalize_text
-      │                     ▼
-      │             normalize_digits
-      │
-      ▼
-Audio Bytes
-      ▼
-Temporary WAV
-      ▼
-Whisper Medium
-      ▼
-Predicted Transcript
-      ▼
-normalize_text
-      ▼
-normalize_digits
-      ▼
-Compare Reference vs Prediction
-      ▼
-WER • CER • STS • SER
-      ▼
-Average Metrics & Results
+```mermaid
+flowchart TD
+    A[ATCOSIM Dataset]
 
+    %% Reference branch
+    A --> B[Reference Transcript]
+    B --> C[normalize_text]
+    C --> D[normalize_digits]
+
+    %% Audio branch
+    A --> E[Audio Bytes]
+    E --> F[Temporary WAV]
+    F --> G[Whisper Medium / Vosk / wav2vec2]
+    G --> H[Predicted Transcript]
+    H --> I[normalize_text]
+    I --> J[normalize_digits]
+
+    %% Merge
+    D --> K[Compare Reference vs Prediction]
+    J --> K
+
+    %% Metrics
+    K --> L[WER]
+    K --> M[CER]
+    K --> N[STS]
+    K --> O[SER]
+
+    %% Results
+    L --> P[Average Metrics & Results]
+    M --> P
+    N --> P
+    O --> P
+```
 
 The evaluation pipeline downloads speech samples from the ATCOSIM corpus, extracts each audio recording, and transcribes it using various models. Both the reference transcript and predictions are normalized using text normalization and ATC-specific digit normalization before comparison. The normalized transcripts are evaluated using Word Error Rate (WER), Character Error Rate (CER), Semantic Similarity (STS), and Semantic Error Rate (SER). Metrics are averaged across all evaluated samples to measure overall transcription performance.
 
