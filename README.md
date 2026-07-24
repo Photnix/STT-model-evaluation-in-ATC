@@ -64,7 +64,7 @@ flowchart TD
     %% Audio branch
     A --> E[Audio Bytes]
     E --> F[Temporary WAV]
-    F --> G[Whisper Medium / Vosk / wav2vec2]
+    F --> G[ASR Model]
     G --> H[Predicted Transcript]
     H --> I[normalize_text]
     I --> J[normalize_digits]
