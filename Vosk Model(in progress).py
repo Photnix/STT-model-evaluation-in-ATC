@@ -162,7 +162,7 @@ def normalize_digits(text):
     return " ".join(output)
 
 
-SEMANTIC_KEYWORDS = {
+#SEMANTIC_KEYWORDS = {
     "left", "right",
     "turn", "climb", "descend", "maintain", "contact", "report", "continue",
     "proceed", "hold", "cleared", "expedite", "intercept",
@@ -177,8 +177,124 @@ SEMANTIC_KEYWORDS = {
     "lufthansa", "sabena", "transwede", "transavia", "speedbird", "swissair",
     "india", "oscar", "kilo",
     "zurich", "rhein", "trasadingen", "dinkelsbuhl"
-}
+#}
 
+SEMANTIC_KEYWORDS = {
+    # Directions
+    "left", "right",
+    "north", "south", "east", "west",
+
+    # Core ATC commands
+    "turn", "climb", "descend", "maintain",
+    "contact", "report", "continue", "proceed",
+    "hold", "cleared", "clearance",
+    "expedite", "intercept", "direct",
+    "vector", "vectors",
+    "cross", "crossing",
+    "monitor", "cancel", "cancelled",
+    "standby", "confirm", "readback",
+    "say", "again",
+    "keep", "until", "reaching",
+    "request",
+
+    # Navigation / positioning
+    "heading", "course", "fix", "waypoint",
+    "route", "position",
+    "set", "separation",
+    "degrees",
+
+    # Altitude
+    "flight", "level", "altitude",
+    "rate", "rate of climb",
+    "higher",
+
+    # Speed
+    "speed", "knots",
+
+    # Communication
+    "frequency", "decimal", "radio",
+    "tower", "ground",
+    "radar", "identified",
+    "identification",
+    "information", "atis",
+    "station", "calling",
+    "read", "roger",
+
+    # Airport / runway operations
+    "runway", "taxi", "taxiway",
+    "landing", "takeoff",
+    "approach", "departure",
+    "arrival", "arrivals",
+    "enroute",
+
+    # Aircraft / identification
+    "aircraft", "callsign", "call",
+    "squawk", "transponder", "code",
+    "traffic",
+
+    # ATC responses / status
+    "affirmative", "negative",
+    "approved", "unable",
+
+    # Numbers
+    "one", "two", "three", "four", "five",
+    "six", "seven", "eight", "nine", "zero",
+    "hundred", "thousand",
+
+    # ATCOSIM airline / call-sign components
+    "lufthansa",
+    "sabena",
+    "transwede",
+    "transavia",
+    "trans",
+    "speedbird",
+    "speed",
+    "swissair",
+    "swiss",
+    "air",
+    "malaysian",
+    "constellation",
+    "olympic",
+    "jetset",
+    "georgia",
+    "sobelair",
+    "hapag",
+    "lloyd",
+    "alitalia",
+    "klm",
+    "psa",
+    "malta",
+    "viva",
+    "aero",
+    "britannia",
+    "belstar",
+    "gulf",
+
+    # ATCOSIM NATO / spoken-letter identifiers
+    "india",
+    "oscar",
+    "kilo",
+    "foxtrot",
+    "sierra",
+    "alfa",
+    "tango",
+    "hotel",
+    "delta",
+    "papa",
+    "charlie",
+
+    # ATCOSIM locations / navigation points
+    "zurich",
+    "rhein",
+    "trasadingen",
+    "dinkelsbuhl",
+    "gotil",
+    "hochwald",
+    "prex",
+    "frankfurt",
+    "tango",
+    "kempten"
+}
 
 def tokenize(text: str) -> list[str]:
     return re.findall(r"\w+", text.lower())
@@ -246,18 +362,12 @@ def _load_dataset():
         df = pd.read_parquet(parquet_path)
         print(f"Loaded {len(df)} samples")
         return df
-    except Exception as exc:
-        print(f"Falling back to built-in sample data because the parquet download failed: {exc}")
-        fallback_texts = [
-            "zero one two three",
-            "the quick brown fox jumps over the lazy dog",
-            "speech recognition evaluation",
-        ]
-        rows = []
-        for text in fallback_texts:
-            rows.append({"text": text, "audio": {"bytes": _make_fallback_audio_bytes(text)}})
-        return pd.DataFrame(rows)
 
+    except Exception as e:
+        raise RuntimeError(
+            f"Failed to download ATCOSIM dataset: {e}\n"
+            "Cannot run the full evaluation using fallback samples."
+    )
 
 # -----------------------------
 # Download dataset parquet
@@ -289,7 +399,7 @@ except Exception as e:
 # -----------------------------
 # Evaluation
 # -----------------------------
-NUM_SAMPLES = 50  # increase later (e.g. 100+)
+NUM_SAMPLES = 500  # increase later (e.g. 100+)
 
 wer_scores = []
 cer_scores_all = []
