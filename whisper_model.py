@@ -171,20 +171,120 @@ def normalize_digits(text):
 print("TEST:", normalize_digits("one hundred thirty four six"))
 
 SEMANTIC_KEYWORDS = {
+    # Directions
     "left", "right",
-    "turn", "climb", "descend", "maintain", "contact", "report", "continue",
-    "proceed", "hold", "cleared", "expedite", "intercept",
-    "heading", "course", "radar", "identified", "approach", "departure",
-    "runway", "landing", "takeoff", "tower", "ground",
-    "frequency", "decimal", "radio",
+    "north", "south", "east", "west",
+
+    # Core ATC commands
+    "turn", "climb", "descend", "maintain",
+    "contact", "report", "continue", "proceed",
+    "hold", "cleared", "clearance",
+    "expedite", "intercept", "direct",
+    "vector", "vectors",
+    "cross", "crossing",
+    "monitor", "cancel", "cancelled",
+    "standby", "confirm", "readback",
+    "say", "again",
+    "keep", "until", "reaching",
+    "request",
+
+    # Navigation / positioning
+    "heading", "course", "fix", "waypoint",
+    "route", "position",
+    "set", "separation",
+    "degrees",
+
+    # Altitude
     "flight", "level", "altitude",
+    "rate", "rate of climb",
+    "higher",
+
+    # Speed
+    "speed", "knots",
+
+    # Communication
+    "frequency", "decimal", "radio",
+    "tower", "ground",
+    "radar", "identified",
+    "identification",
+    "information", "atis",
+    "station", "calling",
+    "read", "roger",
+
+    # Airport / runway operations
+    "runway", "taxi", "taxiway",
+    "landing", "takeoff",
+    "approach", "departure",
+    "arrival", "arrivals",
+    "enroute",
+
+    # Aircraft / identification
+    "aircraft", "callsign", "call",
+    "squawk", "transponder", "code",
+    "traffic",
+
+    # ATC responses / status
+    "affirmative", "negative",
+    "approved", "unable",
+
+    # Numbers
     "one", "two", "three", "four", "five",
     "six", "seven", "eight", "nine", "zero",
     "hundred", "thousand",
-    "north", "south", "east", "west",
-    "lufthansa", "sabena", "transwede", "transavia", "speedbird", "swissair",
-    "india", "oscar", "kilo",
-    "zurich", "rhein", "trasadingen", "dinkelsbuhl"
+
+    # ATCOSIM airline / call-sign components
+    "lufthansa",
+    "sabena",
+    "transwede",
+    "transavia",
+    "trans",
+    "speedbird",
+    "speed",
+    "swissair",
+    "swiss",
+    "air",
+    "malaysian",
+    "constellation",
+    "olympic",
+    "jetset",
+    "georgia",
+    "sobelair",
+    "hapag",
+    "lloyd",
+    "alitalia",
+    "klm",
+    "psa",
+    "malta",
+    "viva",
+    "aero",
+    "britannia",
+    "belstar",
+    "gulf",
+
+    # ATCOSIM NATO / spoken-letter identifiers
+    "india",
+    "oscar",
+    "kilo",
+    "foxtrot",
+    "sierra",
+    "alfa",
+    "tango",
+    "hotel",
+    "delta",
+    "papa",
+    "charlie",
+
+    # ATCOSIM locations / navigation points
+    "zurich",
+    "rhein",
+    "trasadingen",
+    "dinkelsbuhl",
+    "gotil",
+    "hochwald",
+    "prex",
+    "frankfurt",
+    "tango",
+    "kempten"
 }
 
 def tokenize(text: str) -> list[str]:
@@ -316,7 +416,7 @@ model = whisper.load_model("medium")
 # -----------------------------
 # Evaluation
 # -----------------------------
-NUM_SAMPLES = 50  # increase later (e.g. 100+)
+NUM_SAMPLES = 500  # increase later (e.g. 100+)
 
 wer_scores = []
 cer_scores_all = []
