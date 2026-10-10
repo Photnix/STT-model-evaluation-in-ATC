@@ -1,9 +1,6 @@
 """
 Transcribe ATCOSIM with facebook/wav2vec2-large-960h-lv60-self
 (general-purpose baseline).
-
-    python wav2vec2_transcribe.py   # writes transcripts/<OUT_TAG>.csv
-    python rescore.py               # scores every CSV in transcripts/
 """
 
 import os
