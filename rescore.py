@@ -1,14 +1,3 @@
-#!/usr/bin/env python3
-"""
-Recompute evaluation metrics from saved transcripts.
-
-    python rescore.py                      # every CSV in transcripts/
-    python rescore.py transcripts/x.csv
-    python rescore.py --standard-only
-    python rescore.py --no-icao
-    python rescore.py --compare
-"""
-
 import re
 import sys
 import glob
