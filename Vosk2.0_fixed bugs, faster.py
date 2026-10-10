@@ -1,10 +1,6 @@
 """
 Transcribe ATCOSIM with vosk-model-en-us-0.22 (general-purpose baseline).
-
-Vosk is Kaldi-based and runs on CPU only — it cannot use CUDA.
-
-    python vosk_transcribe.py   # writes transcripts/<OUT_TAG>.csv
-    python rescore.py           # scores every CSV in transcripts/
+Vosk is Kaldi-based and runs on CPU only — cannot use CUDA.
 """
 
 import io
