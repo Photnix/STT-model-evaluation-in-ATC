@@ -1,8 +1,5 @@
 """
 Transcribe ATCOSIM with jlvdoorn/whisper-medium-atco2-asr.
-
-    python whisper_atc_atco2_transcribe.py   # writes transcripts/<OUT_TAG>.csv
-    python rescore.py                        # scores every CSV in transcripts/
 """
 
 import os
