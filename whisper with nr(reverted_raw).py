@@ -1,8 +1,5 @@
 """
 Transcribe ATCOSIM with openai/whisper-medium (general-purpose baseline).
-
-    python whisper_transcribe.py   # writes transcripts/<OUT_TAG>.csv
-    python rescore.py              # scores every CSV in transcripts/
 """
 
 import os
