@@ -1,8 +1,5 @@
 """
 Transcribe ATCOSIM with Jzuluaga/wav2vec2-xls-r-300m-en-atc-uwb-atcc.
-
-    python w2v2_xlsr300m_atc_transcribe.py  # writes transcripts/<OUT_TAG>.csv
-    python rescore.py                       # scores every CSV in transcripts/
 """
 
 import os
