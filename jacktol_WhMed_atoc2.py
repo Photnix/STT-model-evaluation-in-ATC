@@ -1,8 +1,5 @@
 """
 Transcribe ATCOSIM with jacktol/whisper-medium.en-fine-tuned-for-ATC.
-
-    python whisper_atc_jacktol_transcribe.py  # writes transcripts/<OUT_TAG>.csv
-    python rescore.py                        # scores every CSV in transcripts/
 """
 
 import os
