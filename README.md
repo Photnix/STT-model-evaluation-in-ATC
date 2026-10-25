@@ -29,16 +29,21 @@ Model versions
 
 | model | exact version |
 |---|---|
-| Whisper medium | `openai-whisper` `<version>`, checkpoint `<from versions.py>` |
-| wav2vec2 large | `facebook/wav2vec2-large-960h-lv60-self` @ `<commit>` |
-| Vosk | `vosk-model-en-us-0.22`, `vosk` `<version>` |
-| wav2vec2 large + ATC | `Jzuluaga/wav2vec2-large-960h-lv60-self-en-atc-uwb-atcc` @ `<commit>` |
-| XLS-R + ATC | `Jzuluaga/wav2vec2-xls-r-300m-en-atc-uwb-atcc` @ `<commit>` |
-| Whisper medium + ATC | `jlvdoorn/whisper-medium-atco2-asr` @ `<commit>` |
-| Whisper medium.en + ATC | `jacktol/whisper-medium.en-fine-tuned-for-ATC` @ `<commit>` |
-| dataset | `Jzuluaga/atcosim_corpus` @ `<commit>` |
+| Whisper medium | `openai-whisper` 20250625, checkpoint `medium.pt` (SHA-256 `345ae4da62f9b3d59415adc60127b97c714f32e89e936602e85993674d08dcb1`) |
+| wav2vec2 large | `facebook/wav2vec2-large-960h-lv60-self` @ `54074b1c16f4de6a5ad59affb4caa8f2ea03a119` * |
+| Vosk | `vosk-model-en-us-0.22`, `vosk` 0.3.45 |
+| wav2vec2 large + ATC | `Jzuluaga/wav2vec2-large-960h-lv60-self-en-atc-uwb-atcc` @ `3f0dd746694354daed519e3222c01a5a372e1971` * |
+| XLS-R + ATC | `Jzuluaga/wav2vec2-xls-r-300m-en-atc-uwb-atcc` @ `c0e82ce218cbae68e0bbfda4e37aee3e3208e739` |
+| Whisper medium + ATC | `jlvdoorn/whisper-medium-atco2-asr` @ `cc64900035735a406b6677a82e16b2a2e1f4a06c` |
+| Whisper medium.en + ATC | `jacktol/whisper-medium.en-fine-tuned-for-ATC` @ `d373acbfa93d0a69f679d0dbe121177e0874b779` |
+| dataset | `Jzuluaga/atcosim_corpus` @ `7d09ef7987036af7b3c83a9375e4ee030891c616` |
 
-All models use greedy decoding(Whisper: tempateruse 0) with no added language model
+\* These two repositories store their weights only in the older `.bin` format, so `transformers` also downloaded a `.safetensors` copy of the same weights from the repository's conversion pull request: `refs/pr/5` @ `bdb144224e9bb4a242a52f223186f120f6589a6b` for wav2vec2 large, and `refs/pr/2` @ `2361b204331894ef711279f1eaaa94e2972d394b` for wav2vec2 large + ATC.
+
+Software: Python 3.13.6, torch 2.6.0+cu124, transformers 5.12.1, datasets 4.5.0, huggingface_hub 1.21.0, jiwer 4.0.0, pandas 2.3.1.
+
+The Whisper and wav2vec models use greedy decoding (Whisper: temperature 0) with no added language model. Vosk uses its own built-in search and language model, which can't be turned off.
+
 
 Data:
 The data comes from Hugging Face: atcosim_corpus by Jzuluaga, a version of the ATCOSIM corpus. ATCOSIM was recorded during ATC simulations with headset microphones. It contains about ten hours of English speech from ten non-native English speakers (6 male, 4 female) from three control centres, with transcriptions and segment durations.
