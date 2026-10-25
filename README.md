@@ -24,7 +24,7 @@ I first used the base 960h model, which was pretrained on unlabeled audio (audio
 | `jlvdoorn/whisper-medium-atco2-asr` | Whisper medium | not documented |
 | `jacktol/whisper-medium.en-fine-tuned-for-ATC` | Whisper medium.en | ATCO2 (1 hour) + UWB-ATCC |
 
-Two of these are direct comparison with a general-purpose model because they share the same base model: wav2vec2 large vs. the Jzuluaga wav2vec2 large model, and Whisper medium vs. the jlvdoorn model. None of the documented training data includes ATCOSIM.
+Two of these are direct comparisons with a general-purpose model because they share the same base model: wav2vec2 large vs. the Jzuluaga wav2vec2 large model, and Whisper medium vs. the jlvdoorn model. None of the documented training data includes ATCOSIM.
 
 ### Model versions
 
@@ -103,8 +103,6 @@ The general models confuse numbers with everyday words; the fine-tuned models al
 
 The pipeline loads speech samples from the ATCOSIM corpus and transcribes each one with every model. Each model's raw output is saved to a CSV file, and all scoring is done afterwards from those files by rescore.py, so every model is scored by exactly the same rules. Both the reference transcript and the model output are normalized (see above) before comparison. WER and CER are calculated over the whole test split (total errors ÷ total reference words), not averaged per sample.
 
-Earlier versions of this README reported different numbers (e.g. Whisper medium WER 0.453) and a sentence-similarity score (STS). Those came from an older scoring script with bugs in its number handling and are not comparable with the results above.
-
 ```mermaid
 %%{init: {"flowchart": {"htmlLabels": false}}}%%
 flowchart TD
@@ -114,6 +112,9 @@ flowchart TD
     E --> F["Score"]
     F --> G["WER, CER, SER<br/>callsign and<br/>field accuracy"]
 ```
+
+
+Earlier versions of this README reported different numbers (e.g. Whisper medium WER 0.453) and a sentence-similarity score (STS). Those came from an older scoring script with bugs in its number handling and are not comparable with the results above.
 
 
 
