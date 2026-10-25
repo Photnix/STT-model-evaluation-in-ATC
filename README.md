@@ -3,7 +3,8 @@
 This project provides a reproducible pipeline that evaluates Automatic Speech Recognition(ASR) models on Air Traffic Control(ATC) audio. The purpose of this study is to evaluate if general-purpose ASR models work on ATC speech, and if models fine-tuned on ATC data do better. The pipeline measures accuracy using WER, CER, SER and callsign accuracy.
 Seven models were evaluated. Three are general-purpose models from three major model families: OpenAI Whisper, Vosk (Alpha Cephei) and wav2vec2 (Meta/Facebook). The other four are Whisper and wav2vec2 models that were fine-tuned on ATC data.
 
-General Purpose models
+### General Purpose models
+
 Whisper:
 I started with the base model before upgrading to Whisper medium, for high accuracy, especially on digits. Additionally, Whisper medium was slower than the base model but was the strongest of the three general-purpose models in this domain.
 
@@ -14,7 +15,7 @@ I selected the standard en‑us‑0.22 model. A larger model was attempted but r
 Wav2vec:
 I first used the base 960h model, which was pretrained on unlabeled audio (audio without text) and then trained on 960 hours of labeled speech. It performed poorly on ATC audio, so I replaced it with the larger wav2vec2-large-960h-lv60-self, which did better on every metric. It is a good baseline for CTC-style ASR
 
-ATC fine-tuned models
+### ATC fine-tuned models
 
 | model | base model | fine-tuned on |
 |---|---|---|
@@ -25,7 +26,7 @@ ATC fine-tuned models
 
 Two of these are direct comparison with a general pupsoee model because they share the same base model: wav2vec2 large vs. the Jzuluaga wav2vec2 large model, and Whisper medium vs. the jlvdoorn model. None of the documented training data includes ATCOSIM.
 
-Model versions
+### Model versions
 
 | model | exact version |
 |---|---|
@@ -44,15 +45,14 @@ Software: Python 3.13.6, torch 2.6.0+cu124, transformers 5.12.1, datasets 4.5.0,
 
 The Whisper and wav2vec models use greedy decoding (Whisper: temperature 0) with no added language model. Vosk uses its own built-in search and language model, which can't be turned off.
 
-
-Data:
+### Data
 The data comes from Hugging Face: atcosim_corpus by Jzuluaga, a version of the ATCOSIM corpus. ATCOSIM was recorded during ATC simulations with headset microphones. It contains about ten hours of English speech from ten non-native English speakers (6 male, 4 female) from three control centres, with transcriptions and segment durations.
 
 Results below use the official test split (1,901 utterances). The test split contains only 4 of the 10 speakers (one man and three women); the train split contains all 10. The audio is not preprocessed.
 
 Language detection was explored but dropped, because all ATCOSIM speech is in English.
 
-Normalization rules
+### Normalization rules
 
 The reference and the model output go through the same rules, for every model. No model output is ever corrected by hand.
 
@@ -65,7 +65,7 @@ Numbers are compared by value and written digit by digit, so three hundred fifty
 
 A second, name-normalised score also joins words that ATCOSIM writes as two but models usually write as one (trans avia → transavia, speed bird → speedbird, good bye → goodbye, and 10 more airline names). It is applied to the reference and the model output for every model. The standard score is the main result.
 
-Result
+### Result
 
 | model | type | WER | WER (name-normalised) | callsign accuracy |
 |---|---|---|---|---|
@@ -79,13 +79,13 @@ Result
 
 Callsign accuracy is the share of callsigns whose number the model got exactly right (1,534 utterances with a callsign).
 
-Findings
+### Findings
 
 Fine-tuning helps. With the same base model, ATC fine-tuning cut WER by 62.5% for wav2vec2 and 23.7% for Whisper. This holds for each of the four test speakers.
 Fine-tuned models get the numbers right. They recognise at least 95% of frequencies, flight levels, headings and squawk codes. General Whisper gets 85% of frequencies. No model ever swapped left and right.
 The setup matches published results. The Jzuluaga wav2vec2 model scores 15.25% WER here; its model card reports 15.31% on the same test split.
 
-Representative errors
+### Representative errors
 
 | model | examples | pattern |
 |---|---|---|
@@ -108,48 +108,29 @@ jacktol + ATC	sabena → siberia (30), reims → rhein (42)	unfamiliar names rep
 
 The general models confuse numbers with everyday words; the fine-tuned models almost never do. Most of their remaining errors are place and airline names from the airspace ATCOSIM was recorded in.
 
-Pipeline
+### Pipeline
 
 The pipeline loads speech samples from the ATCOSIM corpus and transcribes each one with every model. Each model's raw output is saved to a CSV file, and all scoring is done afterwards from those files by rescore.py, so every model is scored by exactly the same rules. Both the reference transcript and the model output are normalized (see above) before comparison. WER and CER are calculated over the whole test split (total errors ÷ total reference words), not averaged per sample.
 
 Earlier versions of this README reported different numbers (e.g. Whisper medium WER 0.453) and a sentence-similarity score (STS). Those came from an older scoring script with bugs in its number handling and are not comparable with the results above.
 
-## Pipeline
 
 ```mermaid
 flowchart TD
-    A[ATCOSIM Dataset]
-
-    %% Reference branch
-    A --> B[Reference Transcript]
-    B --> C[normalize_text]
-    C --> D[normalize_digits]
-
-    %% Audio branch
-    A --> E[Audio Bytes]
-    E --> F[Temporary WAV]
-    F --> G[ASR Model]
-    G --> H[Predicted Transcript]
-    H --> I[normalize_text]
-    I --> J[normalize_digits]
-
-    %% Merge
-    D --> K[Compare Reference vs Prediction]
-    J --> K
-
-    %% Metrics
-    K --> L[WER]
-    K --> M[CER]
-    K --> N[STS]
-    K --> O[SER]
-
-    %% Results
-    L --> P[Average Metrics & Results]
-    M --> P
-    N --> P
-    O --> P
+    A["ATCOSIM test split"] --> B["Reference transcript"]
+    A --> C["Audio"]
+    C --> D["ASR model"]
+    D --> E["Model transcript"]
+    B --> F["CSV file per model"]
+    E --> F
+    F --> G["rescore.py: same normalization for reference and model output"]
+    G --> H["WER"]
+    G --> I["CER"]
+    G --> J["SER"]
+    G --> K["Callsign accuracy"]
+    F --> L["error_analysis.py"]
+    L --> M["Field accuracy and most frequent errors"]
 ```
-
 
 
 
