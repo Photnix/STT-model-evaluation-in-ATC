@@ -1,6 +1,6 @@
 # STT-model-evaluation-in-ATC
 
-This project provides a reproducible pipeline that evaluates Automatic Speech Recognition(ASR) models on Air Traffic Control(ATC) audio. The purpose of this study is to evaluate if general-purpose ASR models work on ATC speech, and if models fine-tuned on ATC data do better. The pipeline measures accuracy using WER, CER, SER and callsign accuracy.
+This project provides a reproducible pipeline that evaluates Automatic Speech Recognition (ASR) models on Air Traffic Control (ATC) audio. The purpose of this study is to evaluate if general-purpose ASR models work on ATC speech, and if models fine-tuned on ATC data do better. The pipeline measures accuracy using WER, CER, SER and callsign accuracy.
 Seven models were evaluated. Three are general-purpose models from three major model families: OpenAI Whisper, Vosk (Alpha Cephei) and wav2vec2 (Meta/Facebook). The other four are Whisper and wav2vec2 models that were fine-tuned on ATC data.
 
 ### General Purpose models
@@ -13,7 +13,7 @@ I selected the standard en‑us‑0.22 model. A larger model was attempted but r
 
 
 Wav2vec:
-I first used the base 960h model, which was pretrained on unlabeled audio (audio without text) and then trained on 960 hours of labeled speech. It performed poorly on ATC audio, so I replaced it with the larger wav2vec2-large-960h-lv60-self, which did better on every metric. It is a good baseline for CTC-style ASR
+I first used the base 960h model, which was pretrained on unlabeled audio (audio without text) and then trained on 960 hours of labeled speech. It performed poorly on ATC audio, so I replaced it with the larger wav2vec2-large-960h-lv60-self, which did better on every metric. It is a good baseline for CTC-style ASR.
 
 ### ATC fine-tuned models
 
@@ -24,7 +24,7 @@ I first used the base 960h model, which was pretrained on unlabeled audio (audio
 | `jlvdoorn/whisper-medium-atco2-asr` | Whisper medium | not documented |
 | `jacktol/whisper-medium.en-fine-tuned-for-ATC` | Whisper medium.en | ATCO2 (1 hour) + UWB-ATCC |
 
-Two of these are direct comparison with a general pupsoee model because they share the same base model: wav2vec2 large vs. the Jzuluaga wav2vec2 large model, and Whisper medium vs. the jlvdoorn model. None of the documented training data includes ATCOSIM.
+Two of these are direct comparison with a general-purpose model because they share the same base model: wav2vec2 large vs. the Jzuluaga wav2vec2 large model, and Whisper medium vs. the jlvdoorn model. None of the documented training data includes ATCOSIM.
 
 ### Model versions
 
@@ -56,16 +56,16 @@ Language detection was explored but dropped, because all ATCOSIM speech is in En
 
 The reference and the model output go through the same rules, for every model. No model output is ever corrected by hand.
 
-Lowercase; remove punctuation and thousands separators (12,000 → 12000).
-A decimal point becomes the word decimal (125.75 → 125 decimal 75).
-Letters are split from digits and numbers become words (FL270 → FL 270 → FL two hundred seventy).
-fl → flight level; ICAO spellings: alpha → alfa, juliet → juliett.
-triple three → three three three; double seven → seven seven.
-Numbers are compared by value and written digit by digit, so three hundred fifty, three five zero and 350 all become three five zero. Tree, fife and niner count as 3, 5 and 9.
+1. Lowercase; remove punctuation and thousands separators (`12,000` → `12000`).
+2. A decimal point becomes the word *decimal* (`125.75` → `125 decimal 75`).
+3. Letters are split from digits and numbers become words (`FL270` → `FL 270` → `FL two hundred seventy`).
+4. `fl` → `flight level`; ICAO spellings: `alpha` → `alfa`, `juliet` → `juliett`.
+5. *triple three* → *three three three*; *double seven* → *seven seven*.
+6. Numbers are compared by value and written digit by digit, so *three hundred fifty*, *three five zero* and *350* all become *three five zero*. *Tree*, *fife* and *niner* count as 3, 5 and 9.
 
 A second, name-normalised score also joins words that ATCOSIM writes as two but models usually write as one (trans avia → transavia, speed bird → speedbird, good bye → goodbye, and 10 more airline names). It is applied to the reference and the model output for every model. The standard score is the main result.
 
-### Result
+### Results
 
 | model | type | WER | WER (name-normalised) | callsign accuracy |
 |---|---|---|---|---|
@@ -81,11 +81,13 @@ Callsign accuracy is the share of callsigns whose number the model got exactly r
 
 ### Findings
 
-Fine-tuning helps. With the same base model, ATC fine-tuning cut WER by 62.5% for wav2vec2 and 23.7% for Whisper. This holds for each of the four test speakers.
-Fine-tuned models get the numbers right. They recognise at least 95% of frequencies, flight levels, headings and squawk codes. General Whisper gets 85% of frequencies. No model ever swapped left and right.
-The setup matches published results. The Jzuluaga wav2vec2 model scores 15.25% WER here; its model card reports 15.31% on the same test split.
-
+- **Fine-tuning helps.** With the same base model, ATC fine-tuning cut WER by 62.5% for wav2vec2 and 23.7% for Whisper. This holds for each of the four test speakers.
+- **Fine-tuned models get the numbers right.** They recognise at least 95% of frequencies, flight levels, headings and squawk codes. General Whisper gets 85% of frequencies. No model ever swapped *left* and *right*.
+- **The setup matches published results.** The Jzuluaga wav2vec2 model scores 15.25% WER here; its model card reports 15.31% on the same test split.
+  
 ### Representative errors
+
+Most frequent word substitutions (reference → model output):
 
 | model | examples | pattern |
 |---|---|---|
@@ -96,18 +98,7 @@ The setup matches published results. The Jzuluaga wav2vec2 model scores 15.25% W
 | jlvdoorn + ATC | rhein → ryan (85), trasadingen → in (36) | unfamiliar place names replaced by known words |
 | jacktol + ATC | sabena → siberia (30), reims → rhein (42) | unfamiliar names replaced by known words |
 
-Most frequent word substitutions (reference → model output):
-
-model	examples	pattern
-Vosk	two → to (387), four → for (210)	numbers written as everyday words
-wav2vec2 large	descend → descent (53), flight → flat (52)	spelled by sound
-Whisper medium	lufthansa → lofthansa (77), good → goodbye (135)	misspelled airline; ATCOSIM spelling style
-wav2vec2 large + ATC	geneva → jneva (19), squawk → squak (22)	spelled by sound
-jlvdoorn + ATC	rhein → ryan (85), trasadingen → in (36)	unfamiliar place names replaced by known words
-jacktol + ATC	sabena → siberia (30), reims → rhein (42)	unfamiliar names replaced by known words
-
 The general models confuse numbers with everyday words; the fine-tuned models almost never do. Most of their remaining errors are place and airline names from the airspace ATCOSIM was recorded in.
-
 ### Pipeline
 
 The pipeline loads speech samples from the ATCOSIM corpus and transcribes each one with every model. Each model's raw output is saved to a CSV file, and all scoring is done afterwards from those files by rescore.py, so every model is scored by exactly the same rules. Both the reference transcript and the model output are normalized (see above) before comparison. WER and CER are calculated over the whole test split (total errors ÷ total reference words), not averaged per sample.
