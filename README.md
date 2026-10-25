@@ -5,17 +5,14 @@ Seven models were evaluated. Three are general-purpose models from three major m
 
 General Purpose models
 Whisper:
-I started with the base model before upgrading to Whisper medium, for high accuracy, especially on digits. Additonally, Whisper medium was faster than the base model and was the strongest of the three general-purpose models in this domain.
+I started with the base model before upgrading to Whisper medium, for high accuracy, especially on digits. Additionally, Whisper medium was slower than the base model but was the strongest of the three general-purpose models in this domain.
 
 Vosk:
 I selected the standard en‑us‑0.22 model. A larger model was attempted but required significantly more storage. Vosk is a traditional Kaldi-style recognizer, which makes it a useful baseline. It had the highest error rate of the seven models.
 
-Vosk performs reasonably well on telephony-like audio but struggles with clipped syllables and some call signs.
 
 Wav2vec:
-I first used the base 960h model, which was pretrained on unlabeled audio (audio without text) and then trained on 960 hours of labeled speech. It performed poorly on ATC audio, so I replaced it with the larger wav2vec2-large-960h-lv60-self, which did better on every metric and was significanlty faster.
-
--Good baseline for CTC-style ASR
+I first used the base 960h model, which was pretrained on unlabeled audio (audio without text) and then trained on 960 hours of labeled speech. It performed poorly on ATC audio, so I replaced it with the larger wav2vec2-large-960h-lv60-self, which did better on every metric. It is a good baseline for CTC-style ASR
 
 ATC fine-tuned models
 
