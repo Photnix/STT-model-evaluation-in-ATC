@@ -120,11 +120,8 @@ flowchart TD
     D["Reference<br/>transcript"] --> E["Normalize"]
     C --> E
     E --> F["Score"]
-    F --> G["WER, CER, SER<br/>callsign accuracy<br/>field accuracy"]
+    F --> G["WER, CER, SER<br/>#nbsp;#nbsp;callsign accuracy#nbsp;#nbsp;<br/>field accuracy"]
 ```
-
-
-
 
 
 
