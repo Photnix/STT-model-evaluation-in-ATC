@@ -101,7 +101,7 @@ Most frequent word substitutions (reference → model output):
 The general models confuse numbers with everyday words; the fine-tuned models almost never do. Most of their remaining errors are place and airline names from the airspace ATCOSIM was recorded in.
 ### Pipeline
 
-The pipeline loads speech samples from the ATCOSIM corpus and transcribes each one with every model. Each model's raw output is saved to a CSV file, and all scoring is done afterwards from those files by rescore.py, so every model is scored by exactly the same rules. Both the reference transcript and the model output are normalized (see above) before comparison. WER and CER are calculated over the whole test split (total errors ÷ total reference words), not averaged per sample.
+The pipeline loads speech samples from the ATCOSIM corpus and transcribes each one with every model. Each model's raw output is saved to a CSV file, and all scoring is done afterwards from those files by rescore_test.py, so every model is scored by exactly the same rules. Both the reference transcript and the model output are normalized (see above) before comparison. WER and CER are calculated over the whole test split (total errors ÷ total reference words), not averaged per sample.
 
 ```mermaid
 %%{init: {"flowchart": {"htmlLabels": false}}}%%
