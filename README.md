@@ -116,16 +116,12 @@ Earlier versions of this README reported different numbers (e.g. Whisper medium 
 
 ```mermaid
 flowchart TD
-    A["ATCOSIM audio"] --> B["ASR model"] --> C["Model transcript"]
-    D["Reference transcript"] --> E["Normalize"]
+    A["ATCOSIM<br/>audio"] --> B["ASR<br/>model"] --> C["Model<br/>transcript"]
+    D["Reference<br/>transcript"] --> E["Normalize"]
     C --> E
     E --> F["Score"]
-    F --> G["WER, CER, SER,<br/>callsign and field accuracy"]
+    F --> G["WER, CER, SER<br/>callsign accuracy<br/>field accuracy"]
 ```
-
-
-
-
 
 
 
