@@ -114,26 +114,14 @@ The pipeline loads speech samples from the ATCOSIM corpus and transcribes each o
 
 Earlier versions of this README reported different numbers (e.g. Whisper medium WER 0.453) and a sentence-similarity score (STS). Those came from an older scoring script with bugs in its number handling and are not comparable with the results above.
 
-
 ```mermaid
 flowchart TD
-    A["ATCOSIM test split"] --> B["Reference transcript"]
-    A --> C["Audio"]
-    C --> D["ASR model"]
-    D --> E["Model transcript"]
-    B --> F["CSV file per model"]
-    E --> F
-    F --> G["rescore.py: same normalization for reference and model output"]
-    G --> H["WER"]
-    G --> I["CER"]
-    G --> J["SER"]
-    G --> K["Callsign accuracy"]
-    F --> L["error_analysis.py"]
-    L --> M["Field accuracy and most frequent errors"]
+    A["ATCOSIM audio"] --> B["ASR model"] --> C["Model transcript"]
+    D["Reference transcript"] --> E["Normalize"]
+    C --> E
+    E --> F["Score"]
+    F --> G["WER, CER, SER,<br/>callsign and field accuracy"]
 ```
-
-
-
 
 
 
