@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """
 Words right before a number, in ATCOSIM references where no callsign was found.
+Used to find airline names missing from the callsign list in rescore_test.py.
 
-counts total call signs in each utterance
-    python find_operators.py
+    python Callsignfinder.py
 """
 from collections import Counter
 from itertools import zip_longest
