@@ -1,7 +1,7 @@
 # STT-model-evaluation-in-ATC
 
 This project provides a reproducible pipeline that evaluates Automatic Speech Recognition (ASR) models on Air Traffic Control (ATC) audio. The purpose of this study is to evaluate if general-purpose ASR models work on ATC speech, and if models fine-tuned on ATC data do better. The pipeline measures accuracy using WER, CER, SER, per-field accuracy, 95% confidence intervals, and callsign accuracy.
-Eight models were evaluated. Four are general-purpose models from three major model families: OpenAI Whisper (medium and medium.en), Vosk (Alpha Cephei) and wav2vec2 (Meta/Facebook). The other four are Whisper and wav2vec2 that were fine-tuned on ATC data. General Whisper was also run a second way, as a matched baseline, so there are nine results.
+Eight models were evaluated. Four are general-purpose models from three major model families: OpenAI Whisper (medium and medium.en), Vosk (Alpha Cephei) and wav2vec2 (Meta/Facebook). The other four are Whisper and wav2vec2 models that were fine-tuned on ATC data. General Whisper medium was also run a second way, as a matched baseline, so there are nine results.
 
 ### General Purpose models
 
@@ -9,7 +9,7 @@ Whisper:
 I started with the base model before upgrading to Whisper medium, for high accuracy, especially on digits. Whisper medium was slower than the base model but was the strongest general-purpose model in this domain.
 
 Whisper medium.en:
-I added the English only version of Whisper medium as the matched baseline for the jacktol model, which was fine-tuned from it.
+I added the English-only version of Whisper medium as the matched baseline for the jacktol model, which was fine-tuned from it.
 
 Vosk:
 I selected the standard en‑us‑0.22 model. A larger model was attempted but required significantly more storage. Vosk is a traditional Kaldi-style recognizer, which makes it a useful baseline. It had the highest error rate of all the models.
@@ -29,12 +29,12 @@ I first used the base 960h model, which was pretrained on unlabeled audio (audio
 
 Three of these are direct comparisons with a general-purpose model because they share the same base model: wav2vec2 large vs. the Jzuluaga wav2vec2 large model, Whisper medium.en vs. jacktol, and Whisper medium vs. the jlvdoorn model. None of the documented training data includes ATCOSIM.
 
-Jlvdoorn's training data is unknown. so its train-split results are flagged.
+Jlvdoorn's training data is unknown, so its train-split results are flagged (⚑).
 
 
 ### Matched comparisons
 
-Three fine-tuned models are compared directly with the general models they were built from. The general models were run through exactly the same program and settings as the fine tuned models, to make a fair comparison, so the only difference is the fine-tuning.
+Three fine-tuned models are compared directly with the general models they were built from. The general models were run through exactly the same program and settings as the fine-tuned models, to make a fair comparison, so the only difference is the fine-tuning.
 
 | general model (before) | fine-tuned model (after) | how both are run |
 |---|---|---|
@@ -65,7 +65,7 @@ General Whisper medium was also run with the `openai-whisper` package's `transcr
 
 Software: Python 3.13.6, torch 2.6.0+cu124, transformers 5.12.1, datasets 4.5.0, huggingface_hub 1.21.0, jiwer 4.0.0, pandas 2.3.1.
 
-The Whisper and Wav2vec2 models use greedy decoding (Whisper: temperature 0) with no added language model. Vosk uses its own built-in search and language model, which can't be turned off.
+The Whisper and wav2vec2 models use greedy decoding (Whisper: temperature 0) with no added language model. Vosk uses its own built-in search and language model, which can't be turned off.
 
 ### Data
 The data comes from Hugging Face: atcosim_corpus by Jzuluaga, a version of the ATCOSIM corpus. ATCOSIM was recorded during ATC simulations with headset microphones. It contains about ten hours of English speech from ten non-native English speakers (6 male, 4 female) from three control centres, with transcriptions and segment durations.
@@ -87,14 +87,14 @@ The reference and the model output go through the same rules, for every model. N
 
 1. Lowercase; remove punctuation and thousands separators (`12,000` → `12000`).
 2. A decimal point becomes the word *decimal* (`125.75` → `125 decimal 75`).
-3. Letters are split from digits in both directions and numbers become words (`FL270` → `FL 270` → `FL two hundred seventy`).
-4. `fl` → `flight level`; ICAO spellings: `alpha` → `alfa`, `juliet` → `juliett`.
+3. Letters are split from digits in both directions and numbers become words (`FL270` → `FL 270`, `4000ft` → `4000 ft`).
+4. `fl` → `flight level`, `ft` → `feet`; ICAO spellings: `alpha` → `alfa`, `juliet` → `juliett`.
 5. *triple three* → *three three three*; *double seven* → *seven seven*.
 6. Numbers are compared by value and written digit by digit, so *three hundred fifty*, *three five zero* and *350* all become *three five zero*. *Tree*, *fife* and *niner* count as 3, 5 and 9.
 
 A second, name-normalised score also joins words that ATCOSIM writes as two but models usually write as one (trans avia → transavia, speed bird → speedbird, good bye → goodbye, and 10 more airline names). It is applied to the reference and the model output for every model. The standard score is the main result.
 
-**Callsigns:** A callsign is an airline name followed by a number (lufthansa one two three)> The airline names were collected from the reference transcripts, and the list is the same for every model. Callsign digits checks that the number is exactly right; callsign full also requires the airline name to be spelled exactly as the reference. 
+**Callsigns:** A callsign is an airline name followed by a number (lufthansa one two three). The airline names were collected from the reference transcripts, and the list is the same for every model. Callsign digits checks that the number is exactly right; callsign full also requires the airline name to be spelled exactly as in the reference. 
 
 ### Results: Zuluaga's test split (main results)
 
@@ -154,19 +154,19 @@ A second, name-normalised score also joins words that ATCOSIM writes as two but 
 
 ### Findings
 
-- **Fine-tuning helps.** With the same base model and the same program,, ATC fine-tuning cut WER by 62.5% for wav2vec2, 20.2% for Whisper medium, and 44.0% for Whisper medium.en on the test split. The train split also shows the same trend for all three pairs.
-- **Part of Whisper's gain is spelling style, not recognition.** When spelling differences such as *good by* and *goodbye* are normalized, the Whisper medium gain falls from 20.2% to 13.8%. Fine-tuning taught the model some of ATCOSIM's transcription conventions.
-- **How Whisper is run makes only a small difference.** The same general WHisper medium scored 19.61% WER with 'openai-whisper' and 19.17% with 'transformers' on the test split, and 22.35% vs 22.18% on the train split (a tie). The 'openai-whisper' run also returned more empty outputs (4 on test, 8 on train) than the 'transformers' run (0 and 1), most likelyu because of its silence skipping.
-- **Fine-tuned models get the numbers right.** They recognise at least 95.3% of frequencies on the test split (98.0% on train), against 86.0% for every general Whisper run. They also recognize at least 99.6% on flight levels and 100% on headings and squawk codes.No model ever swapped *left* and *right*.
--**Callsign numbers do not separate the two groups.** General Whisper medium gets 93.0%-93.2% of call sign numbers right on the test split, about the same amount as the fine-tuned wav2vec models (92.2-93.8%). Only fine-tuned Whisper models are higher (95.7-98.5%). Requiring airline names to be spelled right lowers each model to 63% or below, mostly because airline names are misheard or misspelled; when just checking numbers, an error like *sabena*  → *siberia* still counts as correct.
+- **Fine-tuning helps.** With the same base model and the same program, ATC fine-tuning cut WER by 62.5% for wav2vec2, 20.2% for Whisper medium, and 44.0% for Whisper medium.en on the test split. The train split also shows the same trend for all three pairs.
+- **Part of Whisper's gain is spelling style, not recognition.** When spelling differences such as *good bye* and *goodbye* are normalized, the Whisper medium gain falls from 20.2% to 13.8%. Fine-tuning taught the model some of ATCOSIM's transcription conventions.
+- **How Whisper is run makes only a small difference.** The same general Whisper medium scored 19.61% WER with `openai-whisper` and 19.17% with `transformers` on the test split, and 22.35% vs 22.18% on the train split (a tie). The `openai-whisper` run also returned more empty outputs (4 on test, 8 on train) than the `transformers` run (0 and 1), most likely because of its silence skipping.
+- **Fine-tuned models get the numbers right.** They recognize at least 95.3% of frequencies on the test split (98.0% on train), against 86.0% for every general Whisper run. They also recognize at least 99.6% on flight levels and 100% on headings and squawk codes. No model ever swapped *left* and *right*.
+- **Callsign numbers do not separate the two groups.** General Whisper medium gets 93.0%-93.2% of callsign numbers right on the test split, about the same amount as the fine-tuned wav2vec2 models (92.2-93.8%). Only fine-tuned Whisper models are higher (95.7-98.5%). Requiring airline names to be spelled right lowers each model to 63% or below, mostly because airline names are misheard or misspelled; when just checking numbers, an error like *sabena* → *siberia* still counts as correct.
 - **Some differences in the ranking are not meaningful.** On the test split, Jzuluaga wav2vec2 + ATC and jlvdoorn are tied (15.25% vs 15.29%). Jzuluaga XLS-R + ATC and general Whisper medium are tied on both splits.
 - **The setup matches published results.** The Jzuluaga wav2vec2 model scores 15.25% WER here; its model card reports 15.31% (no language model) on the same test split.
 - **jlvdoorn behaves differently from the documented models.** From test to train, the wav2vec2 and jacktol gains shrink (62.5% → 59.0% and 44.0% → 39.1%), while jlvdoorn's grows (20.2% → 27.3%). That is consistent with, but does not prove, exposure to ATCOSIM training data, so its train results stay flagged and the test split is the main result.
-- **The setup matches published results.** The Jzuluaga wav2vec2 model scores 15.25% WER here; its model card reports 15.31% on the same test split.
+
   
 ### Representative errors
 
-Most frequent word substitutions on the test split(reference → model output):
+Most frequent word substitutions on the test split (reference → model output):
 
 | model | examples | pattern |
 |---|---|---|
@@ -178,15 +178,16 @@ Most frequent word substitutions on the test split(reference → model output):
 | jacktol + ATC | sabena → siberia (30), reims → rhein (42) | unfamiliar names replaced by known words |
 
 The general models confuse numbers with everyday words; the fine-tuned models almost never do. Most of their remaining errors are place and airline names from the airspace ATCOSIM was recorded in.
+
 ### Pipeline
 
-The pipeline loads speech samples from the ATCOSIM corpus and transcribes each one with every model. Each transcription has a 'Split' setting ('"test"' or '"train"'). Each model's raw output is saved to a CSV file in  `transcripts/` (test split) or `transcripts_train/` (train split), and all scoring is done afterwards from those files. Every model is scored by exactly the same rules. 
+The pipeline loads speech samples from the ATCOSIM corpus and transcribes each one with every model. Each transcription script has a 'Split' setting (`test` or `train`). Each model's raw output is saved to a CSV file in  `transcripts/` (test split) or `transcripts_train/` (train split), and all scoring is done afterwards from those files. Every model is scored by exactly the same rules. 
 
 - `rescore_test.py` / `rescore_train.py`: WER, CER, SER and callsign accuracy
 - `error_analysis_test.py` / `error_analysis_train.py`: field accuracy and most frequent errors
 - `confidence_intervals_test.py` / `confidence_intervals_train.py`: 95% bootstrap confidence intervals, resampling utterances and whole recording sessions, paired across models
 
-Both the reference transcript and the model output are normalized (see above) before comparison. WER and CER are calculated over the whole test split (total errors ÷ total reference words), not averaged per sample.
+Both the reference transcript and the model output are normalized (see above) before comparison. WER and CER are calculated over the whole split (total errors ÷ total reference words), not averaged per sample.
 
 ```mermaid
 %%{init: {"flowchart": {"htmlLabels": false}}}%%
@@ -205,9 +206,7 @@ flowchart TD
 - **One fine-tuned model's training data is undocumented** (`jlvdoorn/whisper-medium-atco2-asr`).
 - **Callsign coverage.** Callsigns are found in about 81% of utterances. Letter-only registrations and a small number of utterances (under 2%) whose airline name couldn't be identified are not counted.
 
-The scorer was last updated on Nov 1, 2026 to read altitudes written without a space (`4000ft`) and to recognise the airline US Air; this mainly changed the general Whisper results.
-
-Earlier versions of this README reported different numbers (e.g. Whisper medium WER 0.453) and a sentence-similarity score (STS). Those came from an older scoring script with bugs in its number handling and are not comparable with the results above.
+Earlier versions of this README reported different numbers (e.g. Whisper medium WER 0.453) and a sentence-similarity score (STS). Those came from an older scoring script with bugs in its number handling and are not comparable with the results above. The scorer was last updated on Nov 1, 2026 to read altitudes written without a space (`4000ft`) and to recognise the airline US Air; this mainly changed the general Whisper results.
 
 
 
