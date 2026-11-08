@@ -1,7 +1,7 @@
 # STT-model-evaluation-in-ATC
 
-This project provides a reproducible pipeline that evaluates Automatic Speech Recognition (ASR) models on Air Traffic Control (ATC) audio. The purpose of this study is to evaluate if general-purpose ASR models work on ATC speech, and if models fine-tuned on ATC data do better. The pipeline measures accuracy using WER, CER, SER and callsign accuracy.
-Seven models were evaluated. Three are general-purpose models from three major model families: OpenAI Whisper, Vosk (Alpha Cephei) and wav2vec2 (Meta/Facebook). The other four are Whisper and wav2vec2 models that were fine-tuned on ATC data.
+This project provides a reproducible pipeline that evaluates Automatic Speech Recognition (ASR) models on Air Traffic Control (ATC) audio. The purpose of this study is to evaluate if general-purpose ASR models work on ATC speech, and if models fine-tuned on ATC data do better. The pipeline measures accuracy using WER, CER, SER, per-field accuracy, 95% confidence intervals, and callsign accuracy.
+Seven models were evaluated. Three are general-purpose models from three major model families: OpenAI Whisper, Vosk (Alpha Cephei) and wav2vec2 (Meta/Facebook). The other four are Whisper and wav2vec2 models that were fine-tuned on ATC data. General Whisper was also ran a second way, as a matched basline.
 
 ### General Purpose models
 
@@ -24,19 +24,23 @@ I first used the base 960h model, which was pretrained on unlabeled audio (audio
 | `jlvdoorn/whisper-medium-atco2-asr` | Whisper medium | not documented |
 | `jacktol/whisper-medium.en-fine-tuned-for-ATC` | Whisper medium.en | ATCO2 (1 hour) + UWB-ATCC |
 
-Two of these are direct comparisons with a general-purpose model because they share the same base model: wav2vec2 large vs. the Jzuluaga wav2vec2 large model, and Whisper medium vs. the jlvdoorn model. None of the documented training data includes ATCOSIM.
+Three of these are direct comparisons with a general-purpose model because they share the same base model: wav2vec2 large vs. the Jzuluaga wav2vec2 large model, Whisper medium.en and jacktol, and Whisper medium vs. the jlvdoorn model. None of the documented training data includes ATCOSIM.
+
+Jlvdoorn's training data is unknown.
 
 ### Model versions
 
 | model | exact version |
 |---|---|
-| Whisper medium | `openai-whisper` 20250625, checkpoint `medium.pt` (SHA-256 `345ae4da62f9b3d59415adc60127b97c714f32e89e936602e85993674d08dcb1`) |
+| Whisper medium(openai-whisper run) | `openai-whisper` 20250625, checkpoint `medium.pt` (SHA-256 `345ae4da62f9b3d59415adc60127b97c714f32e89e936602e85993674d08dcb1`) |
 | wav2vec2 large | `facebook/wav2vec2-large-960h-lv60-self` @ `54074b1c16f4de6a5ad59affb4caa8f2ea03a119` * |
 | Vosk | `vosk-model-en-us-0.22`, `vosk` 0.3.45 |
 | wav2vec2 large + ATC | `Jzuluaga/wav2vec2-large-960h-lv60-self-en-atc-uwb-atcc` @ `3f0dd746694354daed519e3222c01a5a372e1971` * |
 | XLS-R + ATC | `Jzuluaga/wav2vec2-xls-r-300m-en-atc-uwb-atcc` @ `c0e82ce218cbae68e0bbfda4e37aee3e3208e739` |
 | Whisper medium + ATC | `jlvdoorn/whisper-medium-atco2-asr` @ `cc64900035735a406b6677a82e16b2a2e1f4a06c` |
 | Whisper medium.en + ATC | `jacktol/whisper-medium.en-fine-tuned-for-ATC` @ `d373acbfa93d0a69f679d0dbe121177e0874b779` |
+| Whisper medium (`transformers` run) | `openai/whisper-medium` @ `abdf7c39ab9d0397620ccaea8974cc764cd0953e` |
+| Whisper medium.en (`transformers` run) | `openai/whisper-medium.en` @ `2e98eb6279edf5095af0c8dedb36bdec0acd172b` |
 | dataset | `Jzuluaga/atcosim_corpus` @ `7d09ef7987036af7b3c83a9375e4ee030891c616` |
 
 \* These two repositories store their weights only in the older `.bin` format, so `transformers` also downloaded a `.safetensors` copy of the same weights from the repository's conversion pull request: `refs/pr/5` @ `bdb144224e9bb4a242a52f223186f120f6589a6b` for wav2vec2 large, and `refs/pr/2` @ `2361b204331894ef711279f1eaaa94e2972d394b` for wav2vec2 large + ATC.
