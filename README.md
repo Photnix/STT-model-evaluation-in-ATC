@@ -1,15 +1,18 @@
 # STT-model-evaluation-in-ATC
 
 This project provides a reproducible pipeline that evaluates Automatic Speech Recognition (ASR) models on Air Traffic Control (ATC) audio. The purpose of this study is to evaluate if general-purpose ASR models work on ATC speech, and if models fine-tuned on ATC data do better. The pipeline measures accuracy using WER, CER, SER, per-field accuracy, 95% confidence intervals, and callsign accuracy.
-Seven models were evaluated. Three are general-purpose models from three major model families: OpenAI Whisper, Vosk (Alpha Cephei) and wav2vec2 (Meta/Facebook). The other four are Whisper and wav2vec2 models that were fine-tuned on ATC data. General Whisper was also ran a second way, as a matched basline.
+Eight models were evaluated. Four are general-purpose models from three major model families: OpenAI Whisper (medium and medium.en), Vosk (Alpha Cephei) and wav2vec2 (Meta/Facebook). The other four are Whisper and wav2vec2 that were fine-tuned on ATC data. General Whisper was also ran a second way, as a matched baseline, so there are nine results..
 
 ### General Purpose models
 
 Whisper:
-I started with the base model before upgrading to Whisper medium, for high accuracy, especially on digits. Additionally, Whisper medium was slower than the base model but was the strongest of the three general-purpose models in this domain.
+I started with the base model before upgrading to Whisper medium, for high accuracy, especially on digits. Whisper medium was slower than the base model but was the strongest general-purpose model in this domain.
+
+Whisper medium.en:
+I added the english only version of Whisper medium. It was added as the matched baseline for the jacktol model, which was fine-tuned from it.
 
 Vosk:
-I selected the standard en‑us‑0.22 model. A larger model was attempted but required significantly more storage. Vosk is a traditional Kaldi-style recognizer, which makes it a useful baseline. It had the highest error rate of the seven models.
+I selected the standard en‑us‑0.22 model. A larger model was attempted but required significantly more storage. Vosk is a traditional Kaldi-style recognizer, which makes it a useful baseline. It had the highest error rate of all the models.
 
 
 Wav2vec:
@@ -24,15 +27,15 @@ I first used the base 960h model, which was pretrained on unlabeled audio (audio
 | `jlvdoorn/whisper-medium-atco2-asr` | Whisper medium | not documented |
 | `jacktol/whisper-medium.en-fine-tuned-for-ATC` | Whisper medium.en | ATCO2 (1 hour) + UWB-ATCC |
 
-Three of these are direct comparisons with a general-purpose model because they share the same base model: wav2vec2 large vs. the Jzuluaga wav2vec2 large model, Whisper medium.en and jacktol, and Whisper medium vs. the jlvdoorn model. None of the documented training data includes ATCOSIM.
+Three of these are direct comparisons with a general-purpose model because they share the same base model: wav2vec2 large vs. the Jzuluaga wav2vec2 large model, Whisper medium.en vs. jacktol, and Whisper medium vs. the jlvdoorn model. None of the documented training data includes ATCOSIM.
 
-Jlvdoorn's training data is unknown.
+Jlvdoorn's training data is unknown. so its train-split results are flagged.
 
 ### Model versions
 
 | model | exact version |
 |---|---|
-| Whisper medium(openai-whisper run) | `openai-whisper` 20250625, checkpoint `medium.pt` (SHA-256 `345ae4da62f9b3d59415adc60127b97c714f32e89e936602e85993674d08dcb1`) |
+| Whisper medium (openai-whisper run) | `openai-whisper` 20250625, checkpoint `medium.pt` (SHA-256 `345ae4da62f9b3d59415adc60127b97c714f32e89e936602e85993674d08dcb1`) |
 | wav2vec2 large | `facebook/wav2vec2-large-960h-lv60-self` @ `54074b1c16f4de6a5ad59affb4caa8f2ea03a119` * |
 | Vosk | `vosk-model-en-us-0.22`, `vosk` 0.3.45 |
 | wav2vec2 large + ATC | `Jzuluaga/wav2vec2-large-960h-lv60-self-en-atc-uwb-atcc` @ `3f0dd746694354daed519e3222c01a5a372e1971` * |
