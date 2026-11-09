@@ -154,7 +154,7 @@ A second, name-normalised score also joins words that ATCOSIM writes as two but 
 
 ### Findings
 
-- **Fine-tuning helps.** With the same base model and the same program, ATC fine-tuning cut WER by 62.5% for wav2vec2, 20.2% for Whisper medium, and 44.0% for Whisper medium.en on the test split. The train split also shows the same trend for all three pairs.
+- **Fine-tuning helps.** With the same base model and the same program, ATC fine-tuning cut WER by 62.5% for wav2vec2, 20.2% for Whisper medium, and 44.0% for Whisper medium.en on the test split. This holds true for all of the four speakers, and the train split also shows the same trend for all three pairs.
 - **Part of Whisper's gain is spelling style, not recognition.** When spelling differences such as *good bye* and *goodbye* are normalized, the Whisper medium gain falls from 20.2% to 13.8%. Fine-tuning taught the model some of ATCOSIM's transcription conventions.
 - **How Whisper is run makes only a small difference.** The same general Whisper medium scored 19.61% WER with `openai-whisper` and 19.17% with `transformers` on the test split, and 22.35% vs 22.18% on the train split (a tie). The `openai-whisper` run also returned more empty outputs (4 on test, 8 on train) than the `transformers` run (0 and 1), most likely because of its silence skipping.
 - **Fine-tuned models get the numbers right.** They recognize at least 95.3% of frequencies on the test split (98.0% on train), against 86.0% for every general Whisper run. They also recognize at least 99.6% on flight levels and 100% on headings and squawk codes. No model ever swapped *left* and *right*.
@@ -186,6 +186,8 @@ The pipeline loads speech samples from the ATCOSIM corpus and transcribes each o
 - `rescore_test.py` / `rescore_train.py`: WER, CER, SER and callsign accuracy
 - `error_analysis_test.py` / `error_analysis_train.py`: field accuracy and most frequent errors
 - `confidence_intervals_test.py` / `confidence_intervals_train.py`: 95% bootstrap confidence intervals, resampling utterances and whole recording sessions, paired across models
+
+Run every script from the main folder of the repository (for example `python test_split/rescore_test.py`), because the scripts look for `transcripts/` and `transcripts_train/` there.
 
 Both the reference transcript and the model output are normalized (see above) before comparison. WER and CER are calculated over the whole split (total errors ÷ total reference words), not averaged per sample.
 
